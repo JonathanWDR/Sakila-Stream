@@ -1,6 +1,4 @@
-
-
-SELECT * From language
+SET search_path TO sakila;
 
 --
 -- Table structure for table `content_type`
@@ -93,6 +91,14 @@ CREATE TABLE video_quality (
   CONSTRAINT pk_video_quality PRIMARY KEY (video_quality_id)
 );
 
+--
+-- Table structure for table `service_type`
+--
+CREATE TABLE service_type (
+  service_type_id    SMALLINT   NOT NULL,
+  service_type_name  VARCHAR(128) NOT NULL,
+  CONSTRAINT pk_service_type PRIMARY KEY (service_type_id)
+);
 
 --
 -- Table structure for table `video_quality_price`
@@ -161,14 +167,7 @@ CREATE INDEX idx_sca_fk_video_quality
   ON srv_customer_allocation (video_quality);
 
 
---
--- Table structure for table `service_type`
---
-CREATE TABLE service_type (
-  service_type_id    SMALLINT   NOT NULL,
-  service_type_name  VARCHAR(128) NOT NULL,
-  CONSTRAINT pk_service_type PRIMARY KEY (service_type_id)
-);
+
 
 
 --
@@ -387,6 +386,8 @@ CREATE TABLE binge_flow (
       REFERENCES franchise (franchise_id)
       ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
+
 
 CREATE INDEX idx_binge_flow_fk_next_content
   ON binge_flow (next_content);
