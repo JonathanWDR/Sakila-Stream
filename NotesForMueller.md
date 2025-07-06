@@ -1,0 +1,2 @@
+- "special_features" in diagram, "special_feature" in db
+- row "last_update" in "actor" disappears in step 2, without marking the change
