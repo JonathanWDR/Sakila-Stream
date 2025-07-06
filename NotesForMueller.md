@@ -1,3 +1,3 @@
 - "special_features" in diagram, "special_feature" in db
 - row "last_update" in "actor" disappears in step 2, without marking the change
-- "inconsistencies in table "special_feature", e. g. different attributes in old sakila db and given diagram
+- "inconsistencies in table "content_special_feature", e. g. different attributes in old sakila db and given diagram
