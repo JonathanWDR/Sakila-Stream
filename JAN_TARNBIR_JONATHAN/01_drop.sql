@@ -1,7 +1,7 @@
-Drop table staff;
+Drop table staff cascade;
 
-drop table inventory;
+drop table inventory cascade;
 
-drop table store;
+drop table store cascade;
 
 -- other changes to be made?
