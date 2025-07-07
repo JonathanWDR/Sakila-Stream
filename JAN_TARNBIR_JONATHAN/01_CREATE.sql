@@ -61,7 +61,8 @@ alter table content_actor
 rename column film_id to content_id;
 
 ALTER TABLE content_actor
-alter column content_id TYPE INTEGER;
+alter column content_id TYPE INTEGER,
+alter column actor_id TYPE INTEGER;
 
 
 CREATE TABLE content_type (
