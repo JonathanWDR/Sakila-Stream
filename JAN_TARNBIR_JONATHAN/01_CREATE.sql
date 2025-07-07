@@ -9,6 +9,14 @@ drop table if exists store cascade;
 
 drop table if exists rental cascade;
 
+
+
+
+
+
+
+
+
 ALTER TABLE CUSTOMER
 DROP COLUMN if exists store_id cascade,
 ADD COLUMN activation_date DATE,
@@ -22,7 +30,8 @@ RENAME TO content_category;
 ALTER TABLE content_category
 RENAME COLUMN film_id TO content_id;
 
-
+ALTER TABLE content_category
+alter column content_id TYPE INTEGER;
 
 -- actor
 ALTER TABLE actor
@@ -38,11 +47,16 @@ ADD COLUMN imdb_name_key VARCHAR(15);
 alter table film_actor
 rename to content_actor;
 
+
+
 alter table content_actor
 drop column last_update;
 
 alter table content_actor
 rename column film_id to content_id;
+
+ALTER TABLE content_actor
+alter column content_id TYPE INTEGER;
 
 
 CREATE TABLE content_type (
@@ -63,9 +77,13 @@ alter table content_stream
 rename column film_id to content_id;
 
 alter table content_stream
+alter column content_id TYPE INTEGER;
+
+alter table content_stream
 drop column rental_duration,
 drop column rental_rate cascade,
 drop column replacement_cost,
+drop column description,
 drop column rating;
 
 alter table content_stream
@@ -84,15 +102,16 @@ FOREIGN KEY (content_type_id) REFERENCES content_type(content_type_id);
 ALTER TABLE FILM_SPECIAL_FEATURE
 RENAME TO CONTENT_SPECIAL_FEATURE;
 
-
-
 --ALTER TABLE CONTENT_SPECIAL_FEATURE
 --DROP CONSTRAINT IF EXISTS film_special_features_pkey;
 -- 2. Modify columns
 ALTER TABLE CONTENT_SPECIAL_FEATURE
 RENAME COLUMN FILM_ID TO CONTENT_ID;
---	
 
+ALTER TABLE content_special_feature
+alter column content_id TYPE INTEGER;
+
+--	
 ALTER TABLE CONTENT_SPECIAL_FEATURE
 ADD COLUMN SPECIAL_FEATURE_ID INTEGER,
 ADD CONSTRAINT fk_special_feature_id
@@ -164,7 +183,7 @@ CREATE INDEX idx_content_language_fk_language_id
 CREATE TABLE video_quality (
   video_quality_id  SMALLINT      NOT NULL,
   vidquality_label  VARCHAR(5)    NOT NULL,
-  vidquality_descr  VARCHAR(20)   NOT NULL,
+  vidquality_descr  VARCHAR(40)   NOT NULL,
   CONSTRAINT pk_video_quality PRIMARY KEY (video_quality_id)
 );
 
@@ -198,6 +217,38 @@ CREATE TABLE video_quality_price (
 CREATE INDEX idx_vqp_fk_video_quality_id
   ON video_quality_price (video_quality_id);
 
+--
+-- Table structure for table `package`
+--
+CREATE TABLE package (
+  package_id       SMALLINT     NOT NULL,
+  category_id      SMALLINT     NOT NULL,
+  additional_info  VARCHAR(255),
+  price            DECIMAL(4,2) NOT NULL,
+  CONSTRAINT pk_package PRIMARY KEY (package_id),
+  CONSTRAINT fk_package_category
+    FOREIGN KEY (category_id)
+      REFERENCES category (category_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE INDEX idx_package_fk_category_id
+  ON package (category_id);
+
+
+--
+-- Table structure for table `subscription`
+--
+CREATE TABLE subscription (
+  subscr_id        SMALLINT     NOT NULL,
+  subscr_name      VARCHAR(128) NOT NULL,
+  additional_info  VARCHAR(255),
+  price            DECIMAL(4,2) NOT NULL,
+  CONSTRAINT pk_subscription PRIMARY KEY (subscr_id)
+);
+
+
+
 
 --
 -- Table structure for table `srv_customer_allocation`
@@ -228,7 +279,15 @@ CREATE TABLE srv_customer_allocation (
   CONSTRAINT fk_sca_video_quality
     FOREIGN KEY (video_quality)
       REFERENCES video_quality (video_quality_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_package
+  	FOREIGN KEY (srv_reference_id)
+	  REFERENCES package (package_id)
+	  ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_subscription
+    FOREIGN KEY (srv_reference_id)
+	  REFERENCES "subscription" (subscr_id)
+	  ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_sca_fk_service_type_id
@@ -307,37 +366,23 @@ drop column amount;
 alter table payment
 add column billing_id bigint,
 add constraint fk_billing_id
-foreign key (billing_id) references billing_head(billing_id);
-
---
--- Table structure for table `subscription`
---
-CREATE TABLE subscription (
-  subscr_id        SMALLINT     NOT NULL,
-  subscr_name      VARCHAR(128) NOT NULL,
-  additional_info  VARCHAR(255),
-  price            DECIMAL(4,2) NOT NULL,
-  CONSTRAINT pk_subscription PRIMARY KEY (subscr_id)
-);
+foreign key (billing_id) references billing_head(billing_id)
+ON DELETE RESTRICT ON UPDATE CASCADE;
 
 
---
--- Table structure for table `package`
---
-CREATE TABLE package (
-  package_id       SMALLINT     NOT NULL,
-  category_id      SMALLINT     NOT NULL,
-  additional_info  VARCHAR(255),
-  price            DECIMAL(4,2) NOT NULL,
-  CONSTRAINT pk_package PRIMARY KEY (package_id),
-  CONSTRAINT fk_package_category
-    FOREIGN KEY (category_id)
-      REFERENCES category (category_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE
-);
+ALTER TABLE payment 
+DROP CONSTRAINT pk_payment;
 
-CREATE INDEX idx_package_fk_category_id
-  ON package (category_id);
+ALTER TABLE payment
+ALTER COLUMN payment_id TYPE BIGINT;
+
+ALTER TABLE payment
+ADD CONSTRAINT pk_payment PRIMARY KEY (payment_id);
+
+
+
+
+
 
 
 --
@@ -436,7 +481,7 @@ CREATE INDEX idx_cust_watch_act_fk_content_id
 -- Table structure for table `content_country_restricted`
 --
 CREATE TABLE content_country_restricted (
-  country_id SMALLINT NOT NULL,
+  country_id INTEGER NOT NULL,
   content_id INTEGER  NOT NULL,
   CONSTRAINT pk_content_country_restricted PRIMARY KEY (country_id, content_id),
   CONSTRAINT fk_ccr_country
@@ -482,3 +527,35 @@ CREATE INDEX idx_binge_flow_fk_next_content
 
 CREATE INDEX idx_binge_flow_fk_franchise_id
   ON binge_flow (franchise_id);
+
+
+
+-- Tabelle SERIES
+CREATE TABLE series (
+  series_id     INTEGER     PRIMARY KEY,
+  content_id    INTEGER     NOT NULL,
+  franchise_id  SMALLINT    NOT NULL,
+  CONSTRAINT fk_series_content   FOREIGN KEY (content_id)   REFERENCES content_stream(content_id),
+  CONSTRAINT fk_series_franchise FOREIGN KEY (franchise_id) REFERENCES franchise(franchise_id)
+);
+
+-- Tabelle SEASON
+CREATE TABLE season (
+  season_id      INTEGER   PRIMARY KEY,
+  series_id      INTEGER   NOT NULL,
+  content_id     INTEGER   NOT NULL,
+  season_number  SMALLINT  NOT NULL,
+  CONSTRAINT fk_season_series  FOREIGN KEY (series_id)  REFERENCES series(series_id),
+  CONSTRAINT fk_season_content FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
+);
+
+-- Tabelle EPISODE
+CREATE TABLE episode (
+  episode_id     INTEGER   PRIMARY KEY,
+  season_id      INTEGER   NOT NULL,
+  content_id     INTEGER   NOT NULL,
+  episode_number SMALLINT  NOT NULL,
+  CONSTRAINT fk_episode_season  FOREIGN KEY (season_id)  REFERENCES season(season_id),
+  CONSTRAINT fk_episode_content FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
+);
+
