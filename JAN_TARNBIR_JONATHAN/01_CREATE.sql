@@ -1,5 +1,8 @@
 SET search_path TO sakila;
 
+drop view if exists customer_list;
+drop view if exists film_list;
+
 
 Drop table if exists staff cascade;
 
