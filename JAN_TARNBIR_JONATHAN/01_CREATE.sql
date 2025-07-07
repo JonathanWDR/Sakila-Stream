@@ -47,6 +47,7 @@ alter column actor_id TYPE INTEGER;
 
 
 
+
 -- film_actor -> content_actor
 alter table film_actor
 rename to content_actor;
@@ -562,4 +563,3 @@ CREATE TABLE episode (
   CONSTRAINT fk_episode_season  FOREIGN KEY (season_id)  REFERENCES season(season_id),
   CONSTRAINT fk_episode_content FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
 );
-
