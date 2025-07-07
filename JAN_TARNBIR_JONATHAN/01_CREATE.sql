@@ -40,7 +40,8 @@ alter column content_id TYPE INTEGER;
 ALTER TABLE actor
 ADD COLUMN imdb_name_key VARCHAR(15);
 
-
+alter table actor
+alter column actor_id TYPE INTEGER;
 
 
 
