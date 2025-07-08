@@ -1,3 +1,5 @@
+SET search_path TO sakila;
+
 INSERT INTO srv_customer_allocation (
     service_type_id,
     srv_reference_id,
