@@ -4,22 +4,6 @@ drop view if exists customer_list;
 drop view if exists film_list;
 
 
-Drop table if exists staff cascade;
-
-drop table if exists inventory cascade;
-
-drop table if exists store cascade;
-
-drop table if exists rental cascade;
-
-
-
-
-
-
-
-
-
 ALTER TABLE CUSTOMER
 DROP COLUMN if exists store_id cascade,
 ADD COLUMN activation_date DATE,
