@@ -2,6 +2,9 @@ SET search_path TO sakila;
 
 drop view if exists customer_list;
 drop view if exists film_list;
+drop view if exists sales_by_film_category;
+drop view if exists v_customer_fav_cat;
+drop view if exists sales_by_store;
 
 
 ALTER TABLE CUSTOMER
