@@ -432,7 +432,7 @@ CREATE TABLE cust_watch_act (
   customer_id        INTEGER    NOT NULL,
   content_id         INTEGER    NOT NULL,
   start_date         TIMESTAMP  NOT NULL,
-  time_index_seconds SMALLINT   NOT NULL,
+  time_index_seconds SMALLINT,
   completion_date    TIMESTAMP,
   last_update        TIMESTAMP  NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT pk_cust_watch_act PRIMARY KEY (cust_watch_act_id),
