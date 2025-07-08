@@ -108,8 +108,6 @@ FOREIGN KEY (content_type_id) REFERENCES content_type(content_type_id);
 ALTER TABLE FILM_SPECIAL_FEATURE
 RENAME TO CONTENT_SPECIAL_FEATURE;
 
---ALTER TABLE CONTENT_SPECIAL_FEATURE
---DROP CONSTRAINT IF EXISTS film_special_features_pkey;
 -- 2. Modify columns
 ALTER TABLE CONTENT_SPECIAL_FEATURE
 RENAME COLUMN FILM_ID TO CONTENT_ID;
@@ -117,23 +115,8 @@ RENAME COLUMN FILM_ID TO CONTENT_ID;
 ALTER TABLE content_special_feature
 alter column content_id TYPE INTEGER;
 
---	
-ALTER TABLE CONTENT_SPECIAL_FEATURE
-ADD COLUMN SPECIAL_FEATURE_ID INTEGER,
-ADD CONSTRAINT fk_special_feature_id
-FOREIGN KEY (special_feature_id) REFERENCES content_stream(content_id),
-ADD constraint fk_content_id
-foreign key (content_id) references content_stream(content_id),
-ADD constraint fk_special_feature_type
-foreign key (special_feature_type) references special_feature(special_feature_type);
-
-
-
-
-
--- -------------- 	CREATES
---------------------
-------------------
+ALTER TABLE special_feature
+alter column special_feature_type TYPE INTEGER;
 
 
 CREATE INDEX idx_content_stream_fk_content_type_id
@@ -148,7 +131,7 @@ CREATE INDEX idx_content_stream_fk_original_language_id
 --
 CREATE TABLE franchise (
   franchise_id        SMALLINT   NOT NULL,
-  start_content_id    INTEGER    NOT NULL,
+  start_content_id    INTEGER,
   franchise_name      VARCHAR(80)  NOT NULL,
   franchise_descr     VARCHAR(255) NOT NULL,
   CONSTRAINT pk_franchise PRIMARY KEY (franchise_id),
