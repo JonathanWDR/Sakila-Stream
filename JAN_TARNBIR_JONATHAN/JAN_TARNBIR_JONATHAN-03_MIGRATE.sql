@@ -1,4 +1,4 @@
-
+SET search_path TO sakila;
 -- Customer migration -> srv_customer_allocation
 	INSERT INTO SRV_CUSTOMER_ALLOCATION (
 	    srv_cust_alloc_id,

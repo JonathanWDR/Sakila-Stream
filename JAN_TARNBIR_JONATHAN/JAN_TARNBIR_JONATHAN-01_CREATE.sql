@@ -223,9 +223,6 @@ CREATE TABLE subscription (
   CONSTRAINT pk_subscription PRIMARY KEY (subscr_id)
 );
 
-
-
-
 --
 -- Table structure for table `srv_customer_allocation`
 --
@@ -244,10 +241,6 @@ CREATE TABLE srv_customer_allocation (
     FOREIGN KEY (service_type_id)
       REFERENCES service_type (service_type_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_reference
-    FOREIGN KEY (srv_reference_id)
-      REFERENCES content_stream (content_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT fk_sca_customer
     FOREIGN KEY (customer_id)
       REFERENCES customer (customer_id)
@@ -256,15 +249,57 @@ CREATE TABLE srv_customer_allocation (
     FOREIGN KEY (video_quality)
       REFERENCES video_quality (video_quality_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_package
-  	FOREIGN KEY (srv_reference_id)
-	  REFERENCES package (package_id)
-	  ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_subscription
-    FOREIGN KEY (srv_reference_id)
-	  REFERENCES "subscription" (subscr_id)
-	  ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT chk_valid_service_type 
+    CHECK (service_type_id IN (1, 2, 3))
 );
+
+-- Polymorphic Foreign Key Validation Function
+CREATE OR REPLACE FUNCTION validate_srv_reference()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Validierung basierend auf service_type_id
+    CASE NEW.service_type_id
+        WHEN 1 THEN -- Subscription
+            IF NOT EXISTS (
+                SELECT 1 FROM subscription 
+                WHERE subscr_id = NEW.srv_reference_id
+            ) THEN
+                RAISE EXCEPTION 'Invalid subscription ID: %. No subscription found with subscr_id = %', 
+                    NEW.srv_reference_id, NEW.srv_reference_id;
+            END IF;
+            
+        WHEN 2 THEN -- Package
+            IF NOT EXISTS (
+                SELECT 1 FROM package 
+                WHERE package_id = NEW.srv_reference_id
+            ) THEN
+                RAISE EXCEPTION 'Invalid package ID: %. No package found with package_id = %', 
+                    NEW.srv_reference_id, NEW.srv_reference_id;
+            END IF;
+            
+        WHEN 3 THEN -- Spot Watching (Content)
+            IF NOT EXISTS (
+                SELECT 1 FROM content_stream 
+                WHERE content_id = NEW.srv_reference_id
+            ) THEN
+                RAISE EXCEPTION 'Invalid content ID: %. No content found with content_id = %', 
+                    NEW.srv_reference_id, NEW.srv_reference_id;
+            END IF;
+            
+        ELSE
+            RAISE EXCEPTION 'Unknown service_type_id: %. Valid values are 1 (Subscription), 2 (Package), 3 (Spot Watching)', 
+                NEW.service_type_id;
+    END CASE;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger für srv_customer_allocation
+CREATE TRIGGER tr_srv_customer_allocation_validate
+    BEFORE INSERT OR UPDATE ON srv_customer_allocation
+    FOR EACH ROW
+    EXECUTE FUNCTION validate_srv_reference();
 
 CREATE INDEX idx_sca_fk_service_type_id
   ON srv_customer_allocation (service_type_id);
@@ -277,10 +312,6 @@ CREATE INDEX idx_sca_fk_customer_id
 
 CREATE INDEX idx_sca_fk_video_quality
   ON srv_customer_allocation (video_quality);
-
-
-
-
 
 --
 -- Table structure for table `billing_head`
