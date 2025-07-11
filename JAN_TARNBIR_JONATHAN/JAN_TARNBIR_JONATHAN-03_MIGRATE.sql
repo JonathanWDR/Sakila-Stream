@@ -78,18 +78,37 @@
 
 -- filme -> content
 
+	INSERT INTO content_stream (
+		content_id,
+	    content_type_id,
+	    title,
+		release_year,
+		original_language_id,
+		--spot_watch_price,
+		length,
+		--stream_uuid,
+		--imdb_title_key
+	)
+	SELECT
+	    film_id,
+		Select content_type_id from content_type where content_ty_name = 'Film',
+		title,
+		release_year,
+		original_language_id,
+		length
+	FROM film;
 
-UPDATE content_stream
-SET content_type_id = '1'
-where content_id = '1';
 
---SELECT content_type_id
---    FROM content_type
---    WHERE content_ty_name = 'Film'
---    LIMIT 1---;
+--- film category -> content_category
 
 
---- Foreign keys for content_id
+--- film_special_feature -> content_special_feature
+
+
+--- film_actor -> content_actor
+
+
+--- Foreign keys for content_id -- after migrating, add these to create
 
 ALTER TABLE content_actor
   add constraint fk_content_id

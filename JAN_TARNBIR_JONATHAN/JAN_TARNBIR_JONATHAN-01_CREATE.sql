@@ -47,47 +47,68 @@ CREATE TABLE content_stream (
 );
 
 -- film_actor -> content_actor
-alter table film_actor                -- migrate this
-rename to content_actor;
+--alter table film_actor                -- migrate this
+--rename to content_actor;
 
-alter table content_actor                -- migrate this
-drop column last_update;
+--alter table content_actor
+--drop column last_update;
 
-alter table content_actor
-rename column film_id to content_id;
+--alter table content_actor
+--rename column film_id to content_id;
 
-ALTER TABLE content_actor
-alter column content_id TYPE INTEGER,
-alter column actor_id TYPE INTEGER;
+--ALTER TABLE content_actor
+--alter column content_id TYPE INTEGER,
+--alter column actor_id TYPE INTEGER;
+
+CREATE TABLE content_actor (
+   actor_id INTEGER NOT NULL,
+   content_id INTEGER NOT NULL,
+   PRIMARY KEY (actor_id, content_id),
+   FOREIGN KEY (actor_id) REFERENCES actor(actor_id),
+   FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
+);
+
 
 
 -- film_category -> content_category
-ALTER TABLE film_category                -- migrate this
-RENAME TO content_category;
+--ALTER TABLE film_category                -- migrate this
+--RENAME TO content_category;
 
-ALTER TABLE content_category                -- migrate this
-RENAME COLUMN film_id TO content_id;
+--ALTER TABLE content_category                
+--RENAME COLUMN film_id TO content_id;
 
-ALTER TABLE content_category
-alter column content_id TYPE INTEGER;
+--ALTER TABLE content_category
+--alter column content_id TYPE INTEGER;
 
 
+CREATE TABLE content_category (
+   content_id INTEGER NOT NULL,
+   category_id SMALLINT NOT NULL,
+   PRIMARY KEY (content_id, category_id),
+   FOREIGN KEY (content_id) REFERENCES content_stream(content_id),
+   FOREIGN KEY (category_id) REFERENCES category(category_id)
+);
 
--- 1. Rename the table
-ALTER TABLE FILM_SPECIAL_FEATURE                -- migrate this
-RENAME TO CONTENT_SPECIAL_FEATURE;
+
+-- 1. Rename the table                   
+--ALTER TABLE FILM_SPECIAL_FEATURE                -- migrate this 
+--RENAME TO CONTENT_SPECIAL_FEATURE;
 
 -- 2. Modify columns
-ALTER TABLE CONTENT_SPECIAL_FEATURE                -- migrate this
-RENAME COLUMN FILM_ID TO CONTENT_ID;
+--ALTER TABLE CONTENT_SPECIAL_FEATURE
+--RENAME COLUMN FILM_ID TO CONTENT_ID;
 
-ALTER TABLE content_special_feature
-alter column content_id TYPE INTEGER;
+--ALTER TABLE content_special_feature
+--alter column content_id TYPE INTEGER;
 
 
-ALTER TABLE special_feature                       -- migrate this
-alter column special_feature_type TYPE INTEGER;
-
+CREATE TABLE content_special_feature (
+   content_id INTEGER NOT NULL,
+   special_feature_type SMALLINT NOT NULL,
+   PRIMARY KEY (content_id, special_feature_type),
+   FOREIGN KEY (content_id) REFERENCES content_stream(content_id),
+   FOREIGN KEY (special_feature_type) REFERENCES special_feature(special_feature_type)
+);
 
 CREATE INDEX idx_content_stream_fk_content_type_id
   ON content_stream (content_type_id);
