@@ -21,46 +21,12 @@ alter table actor
 alter column actor_id TYPE INTEGER;
 
 
-
-
-
-
-
-
-
 CREATE TABLE content_type (
   content_type_id SMALLINT    NOT NULL,
   content_ty_name VARCHAR(64) NOT NULL,
   additional_info VARCHAR(255),
   CONSTRAINT pk_content_type PRIMARY KEY (content_type_id)
 );
-
--- film -> content_stream
-
---alter table film
---rename to content_stream;
-
---alter table content_stream
---rename column film_id to content_id;
-
---alter table content_stream
---alter column content_id TYPE INTEGER;
-
---alter table content_stream
---drop column rental_duration,
---drop column rental_rate cascade,
---drop column replacement_cost,
---drop column description,
---drop column rating;
-
---alter table content_stream
---drop column language_id;
-
---alter table content_stream
---add column imdb_title_key VARCHAR(15),
---add column stream_uuid UUID,
---add column spot_watch_price DECIMAL(2,4),
---add column content_type_id SMALLINT,
 
 
 CREATE TABLE content_stream (
@@ -81,10 +47,10 @@ CREATE TABLE content_stream (
 );
 
 -- film_actor -> content_actor
-alter table film_actor
+alter table film_actor                -- migrate this
 rename to content_actor;
 
-alter table content_actor
+alter table content_actor                -- migrate this
 drop column last_update;
 
 alter table content_actor
@@ -96,10 +62,10 @@ alter column actor_id TYPE INTEGER;
 
 
 -- film_category -> content_category
-ALTER TABLE film_category
+ALTER TABLE film_category                -- migrate this
 RENAME TO content_category;
 
-ALTER TABLE content_category
+ALTER TABLE content_category                -- migrate this
 RENAME COLUMN film_id TO content_id;
 
 ALTER TABLE content_category
@@ -108,18 +74,18 @@ alter column content_id TYPE INTEGER;
 
 
 -- 1. Rename the table
-ALTER TABLE FILM_SPECIAL_FEATURE
+ALTER TABLE FILM_SPECIAL_FEATURE                -- migrate this
 RENAME TO CONTENT_SPECIAL_FEATURE;
 
 -- 2. Modify columns
-ALTER TABLE CONTENT_SPECIAL_FEATURE
+ALTER TABLE CONTENT_SPECIAL_FEATURE                -- migrate this
 RENAME COLUMN FILM_ID TO CONTENT_ID;
 
 ALTER TABLE content_special_feature
 alter column content_id TYPE INTEGER;
 
 
-ALTER TABLE special_feature
+ALTER TABLE special_feature                       -- migrate this
 alter column special_feature_type TYPE INTEGER;
 
 

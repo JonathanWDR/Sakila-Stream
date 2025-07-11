@@ -1,4 +1,7 @@
 
+
+
+
 -- Customer migration -> srv_customer_allocation     - mustn't be executed multiple times (results in duplicates)
 	INSERT INTO SRV_CUSTOMER_ALLOCATION (
 	    srv_cust_alloc_id,
@@ -13,36 +16,30 @@
 	)
 	SELECT
 	    ROW_NUMBER() OVER () AS srv_cust_alloc_id,
-	    
 	    -- Get service type ID for 'Subscription'
 	    (
 	        SELECT t.service_type_id
 	        FROM service_type AS t
 	        WHERE t.service_type_name = 'Subscription'
 	    ) AS service_type_id,
-	    
 	    -- Get subscription ID for 'Free Trial'
 	    (
 	        SELECT s.subscr_id
 	        FROM subscription AS s
 	        WHERE s.subscr_name = 'Free Trial'
 	    ) AS srv_reference_id,
-	    
 	    -- Active customers
 	    c.customer_id,
-	    
 	    -- Get video quality ID for 'SD'
 	    (
 	        SELECT v.video_quality_id
 	        FROM video_quality AS v
 	        WHERE v.vidquality_label = 'SD'
 	    ) AS video_quality,
-	    
 	    CURRENT_TIMESTAMP AS start_date,
 	    CURRENT_TIMESTAMP + INTERVAL '30 days' AS end_date,
 	    TRUE AS active,
 	    CURRENT_TIMESTAMP AS last_update
-	
 	FROM customer AS c
 	WHERE c.active = TRUE;
 
@@ -91,15 +88,6 @@ where content_id = '1';
 --    WHERE content_ty_name = 'Film'
 --    LIMIT 1---;
 
-update customer set first_name = 'DFSBIVHBFRSIZFGRSWBIZ';
-select * from customer;
-
-
-
-
-
-
-
 
 --- Foreign keys for content_id
 
@@ -117,3 +105,8 @@ AlTER TABLE content_special_feature
   add CONSTRAINT fk_content_id
 	foreign key (content_id) references content_stream (content_id);
   -- no special_feature_id!
+
+
+
+
+
