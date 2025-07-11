@@ -80,24 +80,40 @@
 
 
 -- filme -> content
-	insert into content_stream (content_type_id)
-	select content_type_id from content_type
-	where content_ty_name = 'Film';
 
 
 UPDATE content_stream
-SET content_type_id = (
-    SELECT content_type_id
-    FROM content_type
-    WHERE content_ty_name = 'Film'
-    LIMIT 1
-);
+SET content_type_id = '1'
+where content_id = '1';
 
-Select * from content_stream;
+--SELECT content_type_id
+--    FROM content_type
+--    WHERE content_ty_name = 'Film'
+--    LIMIT 1---;
 
-
-
-
+update customer set first_name = 'DFSBIVHBFRSIZFGRSWBIZ';
+select * from customer;
 
 
 
+
+
+
+
+
+--- Foreign keys for content_id
+
+ALTER TABLE content_actor
+  add constraint fk_content_id
+    foreign key (content_id)
+	references content_stream (content_id);
+
+ALTER TABLE content_category
+  add constraint fk_content_id
+    foreign key (content_id)
+	references content_stream (content_id);
+
+AlTER TABLE content_special_feature
+  add CONSTRAINT fk_content_id
+	foreign key (content_id) references content_stream (content_id);
+  -- no special_feature_id!

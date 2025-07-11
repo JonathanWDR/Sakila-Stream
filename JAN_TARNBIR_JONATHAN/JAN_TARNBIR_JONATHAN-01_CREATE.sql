@@ -13,16 +13,6 @@ ADD COLUMN activation_date DATE,
 ADD COLUMN birthdate DATE;
 
 
--- film_category -> content_category
-ALTER TABLE film_category
-RENAME TO content_category;
-
-ALTER TABLE content_category
-RENAME COLUMN film_id TO content_id;
-
-ALTER TABLE content_category
-alter column content_id TYPE INTEGER;
-
 -- actor
 ALTER TABLE actor
 ADD COLUMN imdb_name_key VARCHAR(15);
@@ -35,11 +25,64 @@ alter column actor_id TYPE INTEGER;
 
 
 
+
+
+
+CREATE TABLE content_type (
+  content_type_id SMALLINT    NOT NULL,
+  content_ty_name VARCHAR(64) NOT NULL,
+  additional_info VARCHAR(255),
+  CONSTRAINT pk_content_type PRIMARY KEY (content_type_id)
+);
+
+-- film -> content_stream
+
+--alter table film
+--rename to content_stream;
+
+--alter table content_stream
+--rename column film_id to content_id;
+
+--alter table content_stream
+--alter column content_id TYPE INTEGER;
+
+--alter table content_stream
+--drop column rental_duration,
+--drop column rental_rate cascade,
+--drop column replacement_cost,
+--drop column description,
+--drop column rating;
+
+--alter table content_stream
+--drop column language_id;
+
+--alter table content_stream
+--add column imdb_title_key VARCHAR(15),
+--add column stream_uuid UUID,
+--add column spot_watch_price DECIMAL(2,4),
+--add column content_type_id SMALLINT,
+
+
+CREATE TABLE content_stream (
+  content_id             INTEGER        PRIMARY KEY,
+  content_type_id        SMALLINT      NOT NULL,
+  title                  VARCHAR(128)  NOT NULL,
+  release_year           SMALLINT      NOT NULL,
+  original_language_id   SMALLINT      NOT NULL,
+  spot_watch_price       DECIMAL(4,2),
+  length                 SMALLINT,
+  stream_uuid            UUID,
+  imdb_title_key         VARCHAR(15),
+  -- foreign‐key constraints
+  FOREIGN KEY (content_type_id)
+    REFERENCES content_type(content_type_id),
+  FOREIGN KEY (original_language_id)
+    REFERENCES language(language_id)
+);
+
 -- film_actor -> content_actor
 alter table film_actor
 rename to content_actor;
-
-
 
 alter table content_actor
 drop column last_update;
@@ -52,43 +95,16 @@ alter column content_id TYPE INTEGER,
 alter column actor_id TYPE INTEGER;
 
 
-CREATE TABLE content_type (
-  content_type_id SMALLINT    NOT NULL,
-  content_ty_name VARCHAR(64) NOT NULL,
-  additional_info VARCHAR(255),
-  CONSTRAINT pk_content_type PRIMARY KEY (content_type_id)
-);
+-- film_category -> content_category
+ALTER TABLE film_category
+RENAME TO content_category;
 
+ALTER TABLE content_category
+RENAME COLUMN film_id TO content_id;
 
-
--- film -> content_stream
-
-alter table film
-rename to content_stream;
-
-alter table content_stream
-rename column film_id to content_id;
-
-alter table content_stream
+ALTER TABLE content_category
 alter column content_id TYPE INTEGER;
 
-alter table content_stream
-drop column rental_duration,
-drop column rental_rate cascade,
-drop column replacement_cost,
-drop column description,
-drop column rating;
-
-alter table content_stream
-drop column language_id;
-
-alter table content_stream
-add column imdb_title_key VARCHAR(15),
-add column stream_uuid UUID,
-add column spot_watch_price DECIMAL(2,4),
-add column content_type_id SMALLINT,
-ADD CONSTRAINT fk_content_type_id
-FOREIGN KEY (content_type_id) REFERENCES content_type(content_type_id);
 
 
 -- 1. Rename the table
@@ -101,6 +117,7 @@ RENAME COLUMN FILM_ID TO CONTENT_ID;
 
 ALTER TABLE content_special_feature
 alter column content_id TYPE INTEGER;
+
 
 ALTER TABLE special_feature
 alter column special_feature_type TYPE INTEGER;
@@ -241,13 +258,25 @@ CREATE TABLE srv_customer_allocation (
     FOREIGN KEY (service_type_id)
       REFERENCES service_type (service_type_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_video_quality
+    FOREIGN KEY (video_quality)
+      REFERENCES video_quality (video_quality_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT fk_sca_customer
     FOREIGN KEY (customer_id)
       REFERENCES customer (customer_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_video_quality
-    FOREIGN KEY (video_quality)
-      REFERENCES video_quality (video_quality_id)
+  CONSTRAINT fk_sca_content_stream
+    FOREIGN KEY (srv_reference_id)
+      REFERENCES content_stream (content_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_subscription
+    FOREIGN KEY (srv_reference_id)
+      REFERENCES subscription (subscr_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_package
+    FOREIGN KEY (srv_reference_id)
+      REFERENCES package (package_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT chk_valid_service_type 
     CHECK (service_type_id IN (1, 2, 3))
@@ -330,6 +359,8 @@ CREATE TABLE billing_head (
 
 CREATE INDEX idx_billing_head_fk_customer_id
   ON billing_head (customer_id);
+
+
 
 
 --
