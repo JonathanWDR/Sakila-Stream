@@ -100,13 +100,17 @@
 
 
 --- film category -> content_category
-
+INSERT INTO content_category (content_id, category_id)
+SELECT film_id, category_id
+FROM film_category;
 
 --- film_special_feature -> content_special_feature
 
 
 --- film_actor -> content_actor
-
+INSERT INTO content_actor (actor_id, content_id)
+SELECT actor_id, film_id
+FROM film_actor;
 
 --- Foreign keys for content_id -- after migrating, add these to create
 
