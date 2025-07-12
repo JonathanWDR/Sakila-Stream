@@ -17,3 +17,32 @@ FROM content_category cc1
 JOIN content_category cc2 ON cc1.content_id = cc2.content_id
 WHERE cc1.category_id = (SELECT category_id FROM category WHERE name = 'Drama')
   AND cc2.category_id = (SELECT category_id FROM category WHERE name = 'Comedy');
+
+-- view to get favorite category per customer based on content activities
+CREATE OR REPLACE VIEW v_cust_fav_content_cat AS
+SELECT 
+  customer_id, 
+  first_name, 
+  last_name, 
+  category_id, 
+  category_name,
+  sum_movies,
+  cat_rank
+FROM (
+  SELECT 
+    cust.customer_id, 
+    cust.first_name, 
+    cust.last_name, 
+    cat.category_id, 
+    cat.name AS category_name,
+    COUNT(cwa.cust_watch_act_id) AS sum_movies,
+    DENSE_RANK() OVER (PARTITION BY cust.customer_id ORDER BY COUNT(cwa.cust_watch_act_id) DESC) AS cat_rank
+  FROM customer AS cust
+  INNER JOIN cust_watch_act AS cwa ON cust.customer_id = cwa.customer_id
+  INNER JOIN content_stream AS cs ON cwa.content_id = cs.content_id
+  INNER JOIN content_category AS cc ON cs.content_id = cc.content_id
+  INNER JOIN category AS cat ON cc.category_id = cat.category_id
+  GROUP BY cust.customer_id, cust.first_name, cust.last_name, cat.category_id, cat.name
+) AS ranked_categories
+WHERE cat_rank = 1
+ORDER BY customer_id ASC;
