@@ -105,6 +105,12 @@ SELECT film_id, category_id
 FROM film_category;
 
 --- film_special_feature -> content_special_feature
+INSERT INTO content_stream
+(content_id, content_type_id) -- nothing else, because the data doesn't exist yet
+SELECT content_id, 5
+FROM film_special_feature;
+
+
 
 
 --- film_actor -> content_actor
