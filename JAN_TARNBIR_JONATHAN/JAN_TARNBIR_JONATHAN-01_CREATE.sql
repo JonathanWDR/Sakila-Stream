@@ -94,20 +94,15 @@ CREATE TABLE content_category (
 --ALTER TABLE FILM_SPECIAL_FEATURE                -- migrate this 
 --RENAME TO CONTENT_SPECIAL_FEATURE;
 
--- 2. Modify columns
---ALTER TABLE CONTENT_SPECIAL_FEATURE
---RENAME COLUMN FILM_ID TO CONTENT_ID;
-
---ALTER TABLE content_special_feature
---alter column content_id TYPE INTEGER;
-
 
 CREATE TABLE content_special_feature (
    content_id INTEGER NOT NULL,
    special_feature_type SMALLINT NOT NULL,
-   PRIMARY KEY (content_id, special_feature_type),
+   special_feature_id INTEGER NOT NULL,
+   PRIMARY KEY (content_id, special_feature_type, special_feature_id),
    FOREIGN KEY (content_id) REFERENCES content_stream(content_id),
-   FOREIGN KEY (special_feature_type) REFERENCES special_feature(special_feature_type)
+   FOREIGN KEY (special_feature_type) REFERENCES special_feature(special_feature_type),
+   FOREIGN KEY (special_feature_id) REFERENCES content_stream(content_id)
 );
 
 CREATE INDEX idx_content_stream_fk_content_type_id
