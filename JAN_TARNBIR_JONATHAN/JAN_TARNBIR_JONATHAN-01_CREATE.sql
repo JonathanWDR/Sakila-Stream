@@ -34,7 +34,7 @@ CREATE TABLE content_stream (
   content_type_id        SMALLINT      NOT NULL,
   title                  VARCHAR(128)  NOT NULL,
   release_year           SMALLINT      NOT NULL,
-  original_language_id   SMALLINT      NOT NULL,
+  original_language_id   SMALLINT,
   spot_watch_price       DECIMAL(4,2),
   length                 SMALLINT,
   stream_uuid            UUID,
