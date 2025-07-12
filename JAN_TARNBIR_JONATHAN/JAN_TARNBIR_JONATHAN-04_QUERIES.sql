@@ -46,3 +46,15 @@ FROM (
 ) AS ranked_categories
 WHERE cat_rank = 1
 ORDER BY customer_id ASC;
+
+-- view for billing calculation by customer and date
+CREATE OR REPLACE VIEW v_billing_cust_date AS
+SELECT 
+  bh.billing_id,
+  bh.billing_date,
+  bh.customer_id,
+  SUM(bi.amount) AS total_amount
+FROM billing_head AS bh
+INNER JOIN billing_item AS bi ON bh.billing_id = bi.billing_id
+GROUP BY bh.billing_id, bh.billing_date, bh.customer_id
+ORDER BY bh.billing_id;
