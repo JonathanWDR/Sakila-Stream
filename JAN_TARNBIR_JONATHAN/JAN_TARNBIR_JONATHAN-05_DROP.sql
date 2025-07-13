@@ -22,3 +22,6 @@ drop column rental_id,
 drop column staff_id,
 drop column customer_id,
 drop column amount;
+
+alter table customer
+DROP COLUMN if exists store_id cascade;

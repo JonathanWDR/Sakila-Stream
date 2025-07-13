@@ -1,14 +1,13 @@
 SET search_path TO sakila;
 
-drop view if exists customer_list;
-drop view if exists film_list;
-drop view if exists sales_by_film_category;
-drop view if exists v_customer_fav_cat;
-drop view if exists sales_by_store;
+DROP VIEW IF EXISTS customer_list;
+DROP VIEW IF EXISTS film_list;
+DROP VIEW IF EXISTS sales_by_film_category;
+DROP VIEW IF EXISTS v_customer_fav_cat;
+DROP VIEW IF EXISTS sales_by_store;
 
 
 ALTER TABLE CUSTOMER
-DROP COLUMN if exists store_id cascade,
 ADD COLUMN activation_date DATE,
 ADD COLUMN birthdate DATE;
 
@@ -17,8 +16,8 @@ ADD COLUMN birthdate DATE;
 ALTER TABLE actor
 ADD COLUMN imdb_name_key VARCHAR(15);
 
-alter table actor
-alter column actor_id TYPE INTEGER;
+ALTER TABLE actor
+ALTER column actor_id TYPE INTEGER;
 
 
 CREATE TABLE content_type (
@@ -216,18 +215,18 @@ CREATE TABLE srv_customer_allocation (
     FOREIGN KEY (customer_id)
       REFERENCES customer (customer_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_content_stream
-    FOREIGN KEY (srv_reference_id)
-      REFERENCES content_stream (content_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_subscription
-    FOREIGN KEY (srv_reference_id)
-      REFERENCES subscription (subscr_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_package
-    FOREIGN KEY (srv_reference_id)
-      REFERENCES package (package_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE,
+  --CONSTRAINT fk_sca_content_stream
+  --  FOREIGN KEY (srv_reference_id)              -------- remove
+  --    REFERENCES content_stream (content_id)
+  --    ON DELETE RESTRICT ON UPDATE CASCADE,
+  --CONSTRAINT fk_sca_subscription
+  --  FOREIGN KEY (srv_reference_id)
+  --    REFERENCES subscription (subscr_id)
+  --    ON DELETE RESTRICT ON UPDATE CASCADE,
+  --CONSTRAINT fk_sca_package
+  --  FOREIGN KEY (srv_reference_id)
+  --    REFERENCES package (package_id)
+  --    ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT chk_valid_service_type 
     CHECK (service_type_id IN (1, 2, 3))
 );
@@ -346,10 +345,10 @@ CREATE INDEX idx_billing_item_fk_service_type_id
 
 -- payment
 
-alter table payment
-add column billing_id bigint,
-add constraint fk_billing_id
-foreign key (billing_id) references billing_head(billing_id)
+ALTER TABLE payment
+ADD column billing_id bigint,
+ADD CONSTRAINT fk_billing_id
+FOREIGN KEY (billing_id) REFERENCES billing_head(billing_id)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 
@@ -518,8 +517,14 @@ CREATE TABLE series (
   series_id     INTEGER     PRIMARY KEY,
   content_id    INTEGER     NOT NULL,
   franchise_id  SMALLINT    NOT NULL,
-  CONSTRAINT fk_series_content   FOREIGN KEY (content_id)   REFERENCES content_stream(content_id),
-  CONSTRAINT fk_series_franchise FOREIGN KEY (franchise_id) REFERENCES franchise(franchise_id)
+  CONSTRAINT fk_series_content   
+    FOREIGN KEY (content_id)   
+      REFERENCES content_stream(content_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_series_franchise
+    FOREIGN KEY (franchise_id)
+      REFERENCES franchise(franchise_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Tabelle SEASON
@@ -528,8 +533,14 @@ CREATE TABLE season (
   series_id      INTEGER   NOT NULL,
   content_id     INTEGER   NOT NULL,
   season_number  SMALLINT  NOT NULL,
-  CONSTRAINT fk_season_series  FOREIGN KEY (series_id)  REFERENCES series(series_id),
-  CONSTRAINT fk_season_content FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
+  CONSTRAINT fk_season_series
+    FOREIGN KEY (series_id)
+      REFERENCES series(series_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_season_content
+    FOREIGN KEY (content_id)
+      REFERENCES content_stream(content_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Tabelle EPISODE
@@ -538,6 +549,12 @@ CREATE TABLE episode (
   season_id      INTEGER   NOT NULL,
   content_id     INTEGER   NOT NULL,
   episode_number SMALLINT  NOT NULL,
-  CONSTRAINT fk_episode_season  FOREIGN KEY (season_id)  REFERENCES season(season_id),
-  CONSTRAINT fk_episode_content FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
+  CONSTRAINT fk_episode_season
+    FOREIGN KEY (season_id)
+      REFERENCES season(season_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_episode_content
+    FOREIGN KEY (content_id)
+    REFERENCES content_stream(content_id)
+    ON DELETE RESTRICT ON UPDATE CASCADE
 );
