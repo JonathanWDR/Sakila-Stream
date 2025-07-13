@@ -2,7 +2,7 @@ SET search_path TO sakila;
 
 -- 2.4.4 Zusätzliche Daten einfügen: Neue Kategorie 'Dramedy'
 
--- a. Neue Kategorie 'Dramedy' anlegen
+-- a. New Category 'Dramedy'
 INSERT INTO category (category_id, name, last_update)
 VALUES (
     (SELECT COALESCE(MAX(category_id), 0) + 1 FROM category),
@@ -10,7 +10,7 @@ VALUES (
     CURRENT_TIMESTAMP
 );
 
--- b. Neue Kategorie allen Inhalten hinzufügen, die gleichzeitig den Kategorien "Drama" und "Comedy" zugeordnet sind
+-- b. Add new category to all content that is simultaneously assigned to both "Drama" and "Comedy" categories
 INSERT INTO content_category (content_id, category_id)
 SELECT DISTINCT 
     cc1.content_id,
