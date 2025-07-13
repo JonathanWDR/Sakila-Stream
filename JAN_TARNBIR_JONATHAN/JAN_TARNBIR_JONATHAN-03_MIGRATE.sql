@@ -1,4 +1,4 @@
-
+SET search_path TO sakila;
 
 
 
