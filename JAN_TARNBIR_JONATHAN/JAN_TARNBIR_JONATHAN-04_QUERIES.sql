@@ -37,7 +37,7 @@ WITH RECURSIVE content_chain AS (
         bf.CURRENT_ID,
         bf.NEXT_CONTENT,
         bf.franchise_id
-    FROM BINGE_FLOW bf
+    FROM bingeflow bf
     INNER JOIN content_chain cc ON bf.CURRENT_ID = cc.NEXT_CONTENT
     WHERE bf.franchise_id = 2)
 SELECT * FROM content_chain;
