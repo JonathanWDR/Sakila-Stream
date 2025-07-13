@@ -345,11 +345,6 @@ CREATE INDEX idx_billing_item_fk_service_type_id
   ON billing_item (service_type_id);
 
 -- payment
-alter table payment
-drop column rental_id,
-drop column staff_id,
-drop column customer_id,
-drop column amount;
 
 alter table payment
 add column billing_id bigint,
