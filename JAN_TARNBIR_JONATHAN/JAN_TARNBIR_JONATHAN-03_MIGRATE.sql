@@ -18,7 +18,7 @@ INSERT INTO content_stream
    stream_uuid)
 SELECT
    film_id,
-   (Select content_type_id from content_type where content_ty_name = 'Film'),
+   (SELECT content_type_id FROM content_type WHERE content_ty_name = 'Film'),
    title,
    release_year,
    original_language_id,
@@ -91,12 +91,12 @@ FROM film;
 	        WHERE i.inventory_id = r.inventory_id
 	    ) AS content_id,
 	    r.rental_date,
-		r.return_date as completion_date,
+		r.return_date AS completion_date,
 		r.last_update
 	FROM rental AS r
-	join customer as c
-	on r.customer_id = c.customer_id
-	where c.active = TRUE;
+	JOIN customer AS c
+	ON r.customer_id = c.customer_id
+	WHERE c.active = TRUE;
 
 
 
@@ -139,20 +139,20 @@ FROM film_actor;
 
 --- Foreign keys for content_id -- after migrating, add these to create
 ALTER TABLE content_actor
-  add constraint fk_content_id
-    foreign key (content_id)
-	references content_stream (content_id);
+  ADD CONSTRAINT fk_content_id
+    FOREIGN KEY (content_id)
+	REFERENCES content_stream (content_id);
 
 ALTER TABLE content_category
-  add constraint fk_content_id
-    foreign key (content_id)
-	references content_stream (content_id);
+  ADD CONSTRAINT fk_content_id
+    FOREIGN KEY (content_id)
+	REFERENCES content_stream (content_id);
 
 AlTER TABLE content_special_feature
-  add constraint fk_content_id
-  	foreign key (content_id) references content_stream (content_id),
+  ADD CONSTRAINT fk_content_id
+  	FOREIGN KEY (content_id) REFERENCES content_stream (content_id),
   add CONSTRAINT fk_spec_feat_id
-	foreign key (special_feature_id) references content_stream (content_id);
+	FOREIGN KEY (special_feature_id) REFERENCES content_stream (content_id);
 
 
 
