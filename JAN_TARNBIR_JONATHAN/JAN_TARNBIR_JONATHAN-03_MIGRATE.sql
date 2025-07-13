@@ -85,13 +85,13 @@ SET search_path TO sakila;
 		release_year,
 		original_language_id,
 		--spot_watch_price,
-		length,
+		length
 		--stream_uuid,
 		--imdb_title_key
 	)
 	SELECT
 	    film_id,
-		Select content_type_id from content_type where content_ty_name = 'Film',
+		(Select content_type_id from content_type where content_ty_name = 'Film'),
 		title,
 		release_year,
 		original_language_id,
