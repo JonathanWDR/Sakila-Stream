@@ -32,8 +32,8 @@ CREATE TABLE content_type (
 CREATE TABLE content_stream (
   content_id             INTEGER        PRIMARY KEY,
   content_type_id        SMALLINT      NOT NULL,
-  title                  VARCHAR(128)  NOT NULL,
-  release_year           SMALLINT      NOT NULL,
+  title                  VARCHAR(128),
+  release_year           SMALLINT,
   original_language_id   SMALLINT,
   spot_watch_price       DECIMAL(4,2),
   length                 SMALLINT,
@@ -46,20 +46,6 @@ CREATE TABLE content_stream (
     REFERENCES language(language_id)
 );
 
--- film_actor -> content_actor
---alter table film_actor                -- migrate this
---rename to content_actor;
-
---alter table content_actor
---drop column last_update;
-
---alter table content_actor
---rename column film_id to content_id;
-
---ALTER TABLE content_actor
---alter column content_id TYPE INTEGER,
---alter column actor_id TYPE INTEGER;
-
 CREATE TABLE content_actor (
    actor_id INTEGER NOT NULL,
    content_id INTEGER NOT NULL,
@@ -69,18 +55,6 @@ CREATE TABLE content_actor (
 );
 
 
-
--- film_category -> content_category
---ALTER TABLE film_category                -- migrate this
---RENAME TO content_category;
-
---ALTER TABLE content_category                
---RENAME COLUMN film_id TO content_id;
-
---ALTER TABLE content_category
---alter column content_id TYPE INTEGER;
-
-
 CREATE TABLE content_category (
    content_id INTEGER NOT NULL,
    category_id SMALLINT NOT NULL,
@@ -88,12 +62,6 @@ CREATE TABLE content_category (
    FOREIGN KEY (content_id) REFERENCES content_stream(content_id),
    FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
-
-
--- 1. Rename the table                   
---ALTER TABLE FILM_SPECIAL_FEATURE                -- migrate this 
---RENAME TO CONTENT_SPECIAL_FEATURE;
-
 
 CREATE TABLE content_special_feature (
    content_id INTEGER NOT NULL,
@@ -248,18 +216,18 @@ CREATE TABLE srv_customer_allocation (
     FOREIGN KEY (customer_id)
       REFERENCES customer (customer_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
---  CONSTRAINT fk_sca_content_stream
---    FOREIGN KEY (srv_reference_id)
---      REFERENCES content_stream (content_id)
---      ON DELETE RESTRICT ON UPDATE CASCADE,
---  CONSTRAINT fk_sca_subscription
---    FOREIGN KEY (srv_reference_id)
---      REFERENCES subscription (subscr_id)
---      ON DELETE RESTRICT ON UPDATE CASCADE,
---  CONSTRAINT fk_sca_package
---    FOREIGN KEY (srv_reference_id)
---      REFERENCES package (package_id)
---      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_content_stream
+    FOREIGN KEY (srv_reference_id)
+      REFERENCES content_stream (content_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_subscription
+    FOREIGN KEY (srv_reference_id)
+      REFERENCES subscription (subscr_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_sca_package
+    FOREIGN KEY (srv_reference_id)
+      REFERENCES package (package_id)
+      ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT chk_valid_service_type 
     CHECK (service_type_id IN (1, 2, 3))
 );

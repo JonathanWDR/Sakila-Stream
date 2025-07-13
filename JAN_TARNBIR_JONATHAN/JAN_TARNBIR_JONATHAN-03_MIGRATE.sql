@@ -1,8 +1,29 @@
 SET search_path TO sakila;
 
+-- mustn't be executed multiple times (results in duplicates)
 
 
--- Customer migration -> srv_customer_allocation     - mustn't be executed multiple times (results in duplicates)
+
+
+-- filme -> content
+INSERT INTO content_stream
+  (content_id,
+   content_type_id,
+   title,
+   release_year,
+   original_language_id,
+   length)
+SELECT
+   film_id,
+   (Select content_type_id from content_type where content_ty_name = 'Film'),
+   title,
+   release_year,
+   original_language_id,
+   length
+FROM film;
+
+
+-- Customer migration -> srv_customer_allocation
 	INSERT INTO SRV_CUSTOMER_ALLOCATION (
 	    srv_cust_alloc_id,
 	    service_type_id,
@@ -60,7 +81,6 @@ SET search_path TO sakila;
 	SELECT
 	    ROW_NUMBER() OVER () AS cust_watch_act_id,
 	    r.customer_id,
-		
 	    (
 	        SELECT i.film_id
 	        FROM inventory AS i
@@ -69,29 +89,13 @@ SET search_path TO sakila;
 	    r.rental_date,
 		r.return_date as completion_date,
 		r.last_update
-	
 	FROM rental AS r
 	join customer as c
 	on r.customer_id = c.customer_id
 	where c.active = TRUE;
 
 
--- filme -> content
-INSERT INTO content_stream
-  (content_id,
-   content_type_id,
-   title,
-   release_year,
-   original_language_id,
-   length)
-SELECT
-   film_id,
-   (Select content_type_id from content_type where content_ty_name = 'Film'),
-   title,
-   release_year,
-   original_language_id,
-   length
-FROM film;
+
 
 
 --- film category -> content_category
@@ -100,12 +104,20 @@ SELECT film_id, category_id
 FROM film_category;
 
 --- film_special_feature -> content_special_feature
-INSERT INTO content_stream
-(content_id, content_type_id) -- nothing else, because the data doesn't exist yet
-SELECT content_id, 5
+
+CREATE SEQUENCE IF NOT EXISTS content_id_seq START WITH (SELECT MAX(content_id) FROM content_stream);
+
+INSERT INTO content_special_feature (content_id, special_feature_type, special_feature_id)
+SELECT film_id, special_feature_type, nextval('content_id_seq')
 FROM film_special_feature;
 
 
+select * from content_special_feature;
+
+
+INSERT INTO content_stream (content_id, content_type_id)
+SELECT special_feature_id, 5
+FROM content_special_feature;
 
 
 --- film_actor -> content_actor
