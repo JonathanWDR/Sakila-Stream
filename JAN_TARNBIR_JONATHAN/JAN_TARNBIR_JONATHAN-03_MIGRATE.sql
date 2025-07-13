@@ -105,20 +105,28 @@ FROM film_category;
 
 --- film_special_feature -> content_special_feature
 
-CREATE SEQUENCE IF NOT EXISTS content_id_seq START WITH (SELECT MAX(content_id) FROM content_stream);
+CREATE SEQUENCE IF NOT EXISTS content_id_seq START WITH 1;
+SELECT setval('content_id_seq', (SELECT MAX(content_id) FROM content_stream));
 
+WITH source_data AS (
+    SELECT 
+        film_id,
+        special_feature_type,
+        nextval('content_id_seq') as new_content_id
+    FROM film_special_feature
+),
+content_inserts AS (
+    INSERT INTO content_stream (content_id, content_type_id)
+    SELECT new_content_id, 5
+    FROM source_data
+    RETURNING content_id
+)
 INSERT INTO content_special_feature (content_id, special_feature_type, special_feature_id)
-SELECT film_id, special_feature_type, nextval('content_id_seq')
-FROM film_special_feature;
-
-
-select * from content_special_feature;
-
-
-INSERT INTO content_stream (content_id, content_type_id)
-SELECT special_feature_id, 5
-FROM content_special_feature;
-
+SELECT 
+    film_id,
+    special_feature_type,
+    new_content_id
+FROM source_data;
 
 --- film_actor -> content_actor
 INSERT INTO content_actor (actor_id, content_id)
@@ -126,7 +134,6 @@ SELECT actor_id, film_id
 FROM film_actor;
 
 --- Foreign keys for content_id -- after migrating, add these to create
-
 ALTER TABLE content_actor
   add constraint fk_content_id
     foreign key (content_id)
@@ -138,9 +145,11 @@ ALTER TABLE content_category
 	references content_stream (content_id);
 
 AlTER TABLE content_special_feature
-  add CONSTRAINT fk_content_id
-	foreign key (content_id) references content_stream (content_id);
-  -- no special_feature_id!
+  add constraint fk_content_id
+  	foreign key (content_id) references content_stream (content_id),
+  add CONSTRAINT fk_spec_feat_id
+	foreign key (special_feature_id) references content_stream (content_id);
+
 
 
 
