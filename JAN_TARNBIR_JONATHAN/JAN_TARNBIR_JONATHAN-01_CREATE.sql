@@ -12,7 +12,6 @@ ADD COLUMN activation_date DATE,
 ADD COLUMN birthdate DATE;
 
 
--- actor
 ALTER TABLE actor
 ADD COLUMN imdb_name_key VARCHAR(15);
 
@@ -38,7 +37,6 @@ CREATE TABLE content_stream (
   length                 SMALLINT,
   stream_uuid            UUID,
   imdb_title_key         VARCHAR(15),
-  -- foreign‐key constraints
   FOREIGN KEY (content_type_id)
     REFERENCES content_type(content_type_id),
   FOREIGN KEY (original_language_id)
@@ -79,9 +77,6 @@ CREATE INDEX idx_content_stream_fk_original_language_id
   ON content_stream (original_language_id);
 
 
---
--- Table structure for table `franchise`
---
 CREATE TABLE franchise (
   franchise_id        SMALLINT   NOT NULL,
   start_content_id    INTEGER,
@@ -98,9 +93,6 @@ CREATE INDEX idx_franchise_fk_start_content_id
   ON franchise (start_content_id);
 
 
---
--- Table structure for table `content_language`
---
 CREATE TABLE content_language (
   content_id   INTEGER   NOT NULL,
   language_id  SMALLINT  NOT NULL,
@@ -119,9 +111,6 @@ CREATE INDEX idx_content_language_fk_language_id
   ON content_language (language_id);
 
 
---
--- Table structure for table `video_quality`
---
 CREATE TABLE video_quality (
   video_quality_id  SMALLINT      NOT NULL,
   vidquality_label  VARCHAR(5)    NOT NULL,
@@ -129,18 +118,13 @@ CREATE TABLE video_quality (
   CONSTRAINT pk_video_quality PRIMARY KEY (video_quality_id)
 );
 
---
--- Table structure for table `service_type`
---
 CREATE TABLE service_type (
   service_type_id    SMALLINT   NOT NULL,
   service_type_name  VARCHAR(128) NOT NULL,
   CONSTRAINT pk_service_type PRIMARY KEY (service_type_id)
 );
 
---
--- Table structure for table `video_quality_price`
---
+
 CREATE TABLE video_quality_price (
   service_type_id    SMALLINT     NOT NULL,
   video_quality_id   SMALLINT     NOT NULL,
@@ -159,9 +143,7 @@ CREATE TABLE video_quality_price (
 CREATE INDEX idx_vqp_fk_video_quality_id
   ON video_quality_price (video_quality_id);
 
---
--- Table structure for table `package`
---
+
 CREATE TABLE package (
   package_id       SMALLINT     NOT NULL,
   category_id      SMALLINT     NOT NULL,
@@ -178,9 +160,6 @@ CREATE INDEX idx_package_fk_category_id
   ON package (category_id);
 
 
---
--- Table structure for table `subscription`
---
 CREATE TABLE subscription (
   subscr_id        SMALLINT     NOT NULL,
   subscr_name      VARCHAR(128) NOT NULL,
@@ -189,9 +168,7 @@ CREATE TABLE subscription (
   CONSTRAINT pk_subscription PRIMARY KEY (subscr_id)
 );
 
---
--- Table structure for table `srv_customer_allocation`
---
+
 CREATE TABLE srv_customer_allocation (
   srv_cust_alloc_id  BIGINT      NOT NULL,
   service_type_id    SMALLINT    NOT NULL,
@@ -215,18 +192,6 @@ CREATE TABLE srv_customer_allocation (
     FOREIGN KEY (customer_id)
       REFERENCES customer (customer_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
-  --CONSTRAINT fk_sca_content_stream
-  --  FOREIGN KEY (srv_reference_id)              -------- remove
-  --    REFERENCES content_stream (content_id)
-  --    ON DELETE RESTRICT ON UPDATE CASCADE,
-  --CONSTRAINT fk_sca_subscription
-  --  FOREIGN KEY (srv_reference_id)
-  --    REFERENCES subscription (subscr_id)
-  --    ON DELETE RESTRICT ON UPDATE CASCADE,
-  --CONSTRAINT fk_sca_package
-  --  FOREIGN KEY (srv_reference_id)
-  --    REFERENCES package (package_id)
-  --    ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT chk_valid_service_type 
     CHECK (service_type_id IN (1, 2, 3))
 );
@@ -235,7 +200,7 @@ CREATE TABLE srv_customer_allocation (
 CREATE OR REPLACE FUNCTION validate_srv_reference()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Validierung basierend auf service_type_id
+    -- validation based on service_type_id
     CASE NEW.service_type_id
         WHEN 1 THEN -- Subscription
             IF NOT EXISTS (
@@ -273,7 +238,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger für srv_customer_allocation
+-- Trigger for srv_customer_allocation
 CREATE TRIGGER tr_srv_customer_allocation_validate
     BEFORE INSERT OR UPDATE ON srv_customer_allocation
     FOR EACH ROW
@@ -291,9 +256,7 @@ CREATE INDEX idx_sca_fk_customer_id
 CREATE INDEX idx_sca_fk_video_quality
   ON srv_customer_allocation (video_quality);
 
---
--- Table structure for table `billing_head`
---
+
 CREATE TABLE billing_head (
   billing_id    BIGINT     NOT NULL,
   customer_id   INTEGER    NOT NULL,
@@ -310,11 +273,6 @@ CREATE INDEX idx_billing_head_fk_customer_id
   ON billing_head (customer_id);
 
 
-
-
---
--- Table structure for table `billing_item`
---
 CREATE TABLE billing_item (
   billing_id         BIGINT      NOT NULL,
   billing_item_id    BIGINT      NOT NULL,
@@ -343,14 +301,14 @@ CREATE INDEX idx_billing_item_fk_sca_id
 CREATE INDEX idx_billing_item_fk_service_type_id
   ON billing_item (service_type_id);
 
--- payment
+
+
 
 ALTER TABLE payment
 ADD column billing_id bigint,
 ADD CONSTRAINT fk_billing_id
 FOREIGN KEY (billing_id) REFERENCES billing_head(billing_id)
 ON DELETE RESTRICT ON UPDATE CASCADE;
-
 
 ALTER TABLE payment 
 DROP CONSTRAINT pk_payment;
@@ -364,12 +322,6 @@ ADD CONSTRAINT pk_payment PRIMARY KEY (payment_id);
 
 
 
-
-
-
---
--- Table structure for table `package_content`
---
 CREATE TABLE package_content (
   package_id  SMALLINT  NOT NULL,
   content_id  INTEGER   NOT NULL,
@@ -387,9 +339,7 @@ CREATE TABLE package_content (
 CREATE INDEX idx_package_content_fk_content_id
   ON package_content (content_id);
 
---
--- Table structure for table `customer_watchlist`
---
+
 CREATE TABLE customer_watchlist (
   watchlist_id   INTEGER     NOT NULL,
   customer_id    INTEGER     NOT NULL,
@@ -408,9 +358,6 @@ CREATE INDEX idx_customer_watchlist_fk_customer_id
   ON customer_watchlist (customer_id);
 
 
---
--- Table structure for table `cust_watchlist_item`
---
 CREATE TABLE cust_watchlist_item (
   watchlist_id  INTEGER    NOT NULL,
   content_id    INTEGER    NOT NULL,
@@ -430,9 +377,7 @@ CREATE TABLE cust_watchlist_item (
 CREATE INDEX idx_cust_watchlist_item_fk_content_id
   ON cust_watchlist_item (content_id);
 
---
--- Table structure for table `cust_watch_act`
---
+
 CREATE TABLE cust_watch_act (
   cust_watch_act_id  BIGINT     NOT NULL,
   customer_id        INTEGER    NOT NULL,
@@ -459,9 +404,6 @@ CREATE INDEX idx_cust_watch_act_fk_content_id
   ON cust_watch_act (content_id);
 
 
---
--- Table structure for table `content_country_restricted`
---
 CREATE TABLE content_country_restricted (
   country_id INTEGER NOT NULL,
   content_id INTEGER  NOT NULL,
@@ -480,9 +422,6 @@ CREATE INDEX idx_ccr_fk_content_id
   ON content_country_restricted (content_id);
 
 
---
--- Table structure for table `binge_flow`
---
 CREATE TABLE binge_flow (
   current_id     INTEGER   NOT NULL,
   next_content   INTEGER   NOT NULL,
@@ -512,7 +451,6 @@ CREATE INDEX idx_binge_flow_fk_franchise_id
 
 
 
--- Tabelle SERIES
 CREATE TABLE series (
   series_id     INTEGER     PRIMARY KEY,
   content_id    INTEGER     NOT NULL,
@@ -527,7 +465,6 @@ CREATE TABLE series (
       ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- Tabelle SEASON
 CREATE TABLE season (
   season_id      INTEGER   PRIMARY KEY,
   series_id      INTEGER   NOT NULL,
@@ -543,7 +480,6 @@ CREATE TABLE season (
       ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- Tabelle EPISODE
 CREATE TABLE episode (
   episode_id     INTEGER   PRIMARY KEY,
   season_id      INTEGER   NOT NULL,
