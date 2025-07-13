@@ -20,7 +20,29 @@ JOIN content_category cc2 ON cc1.content_id = cc2.content_id
 WHERE cc1.category_id = (SELECT category_id FROM category WHERE name = 'Drama')
   AND cc2.category_id = (SELECT category_id FROM category WHERE name = 'Comedy');
 
--- view to get favorite category per customer based on content activities
+
+-- 2.4.1 binge_flow
+WITH RECURSIVE content_chain AS (
+    -- Startpunkt: Anfangsinhalt mit CURRENT_ID = 4711 und franchise_id = 2
+    SELECT 
+        CURRENT_ID,
+        NEXT_CONTENT,
+        franchise_id
+    FROM BINGE_FLOW
+    WHERE CURRENT_ID = 4711
+      AND franchise_id = 2
+    UNION ALL
+    -- Rekursiver Teil: Folgeinhalte suchen, indem NEXT_CONTENT = CURRENT_ID matcht
+    SELECT 
+        bf.CURRENT_ID,
+        bf.NEXT_CONTENT,
+        bf.franchise_id
+    FROM BINGE_FLOW bf
+    INNER JOIN content_chain cc ON bf.CURRENT_ID = cc.NEXT_CONTENT
+    WHERE bf.franchise_id = 2)
+SELECT * FROM content_chain;
+
+-- 2.4.2 view to get favorite category per customer based on content activities
 CREATE OR REPLACE VIEW v_cust_fav_content_cat AS
 SELECT 
   customer_id, 
@@ -49,7 +71,7 @@ FROM (
 WHERE cat_rank = 1
 ORDER BY customer_id ASC;
 
--- view for billing calculation by customer and date
+-- 2.4.3 view for billing calculation by customer and date
 CREATE OR REPLACE VIEW v_billing_cust_date AS
 SELECT 
   bh.billing_id,
