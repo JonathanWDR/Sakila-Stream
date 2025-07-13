@@ -1,3 +1,5 @@
+SET search_path TO sakila;
+
 -- Inserts for content_type
 INSERT INTO content_type (content_type_id, content_ty_name, additional_info) VALUES
     (1, 'Film',            'A motion picture'),
