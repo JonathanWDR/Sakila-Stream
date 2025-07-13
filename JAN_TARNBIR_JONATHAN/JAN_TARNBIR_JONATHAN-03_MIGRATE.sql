@@ -53,7 +53,6 @@ FROM film;
 	        FROM subscription AS s
 	        WHERE s.subscr_name = 'Free Trial'
 	    ) AS srv_reference_id,
-	    -- Active customers
 	    c.customer_id,
 	    -- Get video quality ID for 'SD'
 	    (
@@ -68,12 +67,7 @@ FROM film;
 	FROM customer AS c
 	WHERE c.active = TRUE;
 
-
-
-
-
--- migrate rental data -> customer watch activity        - mustn't be executed multiple times (results in duplicates)
-
+-- migrate rental data -> customer watch activity
 	INSERT INTO cust_watch_act (
 		cust_watch_act_id,
 	    customer_id,
@@ -100,14 +94,12 @@ FROM film;
 
 
 
-
-
 --- film category -> content_category
 INSERT INTO content_category (content_id, category_id)
 SELECT film_id, category_id
 FROM film_category;
 
---- film_special_feature -> content_special_feature
+--- film_special_feature -> content_special_feature, creating content_streams for each special feature
 CREATE SEQUENCE IF NOT EXISTS content_id_seq START WITH 1;
 SELECT setval('content_id_seq', (SELECT MAX(content_id) FROM content_stream));
 
