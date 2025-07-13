@@ -46,7 +46,7 @@ CREATE TABLE content_stream (
 CREATE TABLE content_actor (
    actor_id INTEGER NOT NULL,
    content_id INTEGER NOT NULL,
-   PRIMARY KEY (actor_id, content_id),
+   CONSTRAINT pk_content_id PRIMARY KEY (actor_id, content_id),
    FOREIGN KEY (actor_id) REFERENCES actor(actor_id),
    FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
 );
@@ -55,7 +55,7 @@ CREATE TABLE content_actor (
 CREATE TABLE content_category (
    content_id INTEGER NOT NULL,
    category_id SMALLINT NOT NULL,
-   PRIMARY KEY (content_id, category_id),
+   CONSTRAINT pk_category_id PRIMARY KEY (content_id, category_id),
    FOREIGN KEY (content_id) REFERENCES content_stream(content_id),
    FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
