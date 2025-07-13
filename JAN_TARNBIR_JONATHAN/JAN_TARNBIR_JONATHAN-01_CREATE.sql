@@ -1,3 +1,6 @@
+
+-- Using automatically generated PRIMARY and FOREIGN KEY names, as they are unique and descriptive enough.
+
 SET search_path TO sakila;
 
 DROP VIEW IF EXISTS customer_list;
@@ -46,7 +49,7 @@ CREATE TABLE content_stream (
 CREATE TABLE content_actor (
    actor_id INTEGER NOT NULL,
    content_id INTEGER NOT NULL,
-   CONSTRAINT pk_content_id PRIMARY KEY (actor_id, content_id),
+   PRIMARY KEY (actor_id, content_id),
    FOREIGN KEY (actor_id) REFERENCES actor(actor_id),
    FOREIGN KEY (content_id) REFERENCES content_stream(content_id)
 );
