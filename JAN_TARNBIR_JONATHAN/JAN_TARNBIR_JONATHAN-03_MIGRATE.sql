@@ -6,20 +6,24 @@ SET search_path TO sakila;
 
 
 -- filme -> content
+CREATE EXTENSION IF NOT EXISTS pgcrypto; -- for random uuid generation
+
 INSERT INTO content_stream
   (content_id,
    content_type_id,
    title,
    release_year,
    original_language_id,
-   length)
+   length,
+   stream_uuid)
 SELECT
    film_id,
    (Select content_type_id from content_type where content_ty_name = 'Film'),
    title,
    release_year,
    original_language_id,
-   length
+   length,
+   gen_random_uuid() -- nach Aufg. 1: "Der Streamingdienstleister richtet sich nach unseren UUIDs".
 FROM film;
 
 
