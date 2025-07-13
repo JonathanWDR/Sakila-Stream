@@ -77,26 +77,6 @@ SET search_path TO sakila;
 
 
 -- filme -> content
-
-	INSERT INTO content_stream (
-		content_id,
-	    content_type_id,
-	    title,
-		release_year,
-		original_language_id,
-		--spot_watch_price,
-		length
-		--stream_uuid,
-		--imdb_title_key
-	)
-	SELECT
-	    film_id,
-		(Select content_type_id from content_type where content_ty_name = 'Film'),
-		title,
-		release_year,
-		original_language_id,
-		length
-	FROM film;
 INSERT INTO content_stream
   (content_id,
    content_type_id,
