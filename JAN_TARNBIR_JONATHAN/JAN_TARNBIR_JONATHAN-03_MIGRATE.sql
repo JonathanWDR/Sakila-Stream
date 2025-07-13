@@ -136,23 +136,6 @@ INSERT INTO content_actor (actor_id, content_id)
 SELECT actor_id, film_id
 FROM film_actor;
 
---- Foreign keys for content_id -- after migrating, add these to create
-ALTER TABLE content_actor
-  ADD CONSTRAINT fk_content_id
-    FOREIGN KEY (content_id)
-	REFERENCES content_stream (content_id);
-
-ALTER TABLE content_category
-  ADD CONSTRAINT fk_content_id
-    FOREIGN KEY (content_id)
-	REFERENCES content_stream (content_id);
-
-AlTER TABLE content_special_feature
-  ADD CONSTRAINT fk_content_id
-  	FOREIGN KEY (content_id) REFERENCES content_stream (content_id),
-  ADD CONSTRAINT fk_spec_feat_id
-	FOREIGN KEY (special_feature_id) REFERENCES content_stream (content_id);
-
 
 
 
