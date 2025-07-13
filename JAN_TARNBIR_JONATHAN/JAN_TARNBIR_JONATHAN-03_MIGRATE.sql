@@ -128,6 +128,11 @@ INSERT INTO content_actor (actor_id, content_id)
 SELECT actor_id, film_id
 FROM film_actor;
 
+--- language_id -> content_language
+INSERT INTO content_language (content_id, language_id)
+SELECT film_id, language_id
+FROM film;
+
 
 
 
