@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS film_category;
 
 DROP TABLE IF EXISTS  film_special_feature;
 
-
+DROP TABLE IF EXISTS film;
 
 ALTER TABLE payment
 DROP COLUMN rental_id,
