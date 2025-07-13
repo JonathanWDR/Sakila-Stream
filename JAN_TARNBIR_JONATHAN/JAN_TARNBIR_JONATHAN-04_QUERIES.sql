@@ -1,3 +1,5 @@
+SET search_path TO sakila;
+
 -- 2.4.4 Zusätzliche Daten einfügen: Neue Kategorie 'Dramedy'
 
 -- a. Neue Kategorie 'Dramedy' anlegen
