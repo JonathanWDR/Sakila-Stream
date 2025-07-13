@@ -248,18 +248,18 @@ CREATE TABLE srv_customer_allocation (
     FOREIGN KEY (customer_id)
       REFERENCES customer (customer_id)
       ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_content_stream
-    FOREIGN KEY (srv_reference_id)
-      REFERENCES content_stream (content_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_subscription
-    FOREIGN KEY (srv_reference_id)
-      REFERENCES subscription (subscr_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT fk_sca_package
-    FOREIGN KEY (srv_reference_id)
-      REFERENCES package (package_id)
-      ON DELETE RESTRICT ON UPDATE CASCADE,
+--  CONSTRAINT fk_sca_content_stream
+--    FOREIGN KEY (srv_reference_id)
+--      REFERENCES content_stream (content_id)
+--      ON DELETE RESTRICT ON UPDATE CASCADE,
+--  CONSTRAINT fk_sca_subscription
+--    FOREIGN KEY (srv_reference_id)
+--      REFERENCES subscription (subscr_id)
+--      ON DELETE RESTRICT ON UPDATE CASCADE,
+--  CONSTRAINT fk_sca_package
+--    FOREIGN KEY (srv_reference_id)
+--      REFERENCES package (package_id)
+--      ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT chk_valid_service_type 
     CHECK (service_type_id IN (1, 2, 3))
 );
