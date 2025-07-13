@@ -108,7 +108,6 @@ SELECT film_id, category_id
 FROM film_category;
 
 --- film_special_feature -> content_special_feature
-
 CREATE SEQUENCE IF NOT EXISTS content_id_seq START WITH 1;
 SELECT setval('content_id_seq', (SELECT MAX(content_id) FROM content_stream));
 
@@ -120,8 +119,8 @@ WITH source_data AS (
     FROM film_special_feature
 ),
 content_inserts AS (
-    INSERT INTO content_stream (content_id, content_type_id)
-    SELECT new_content_id, 5
+    INSERT INTO content_stream (content_id, content_type_id, stream_uuid)
+    SELECT new_content_id, 5, gen_random_uuid()
     FROM source_data
     RETURNING content_id
 )
@@ -151,7 +150,7 @@ ALTER TABLE content_category
 AlTER TABLE content_special_feature
   ADD CONSTRAINT fk_content_id
   	FOREIGN KEY (content_id) REFERENCES content_stream (content_id),
-  add CONSTRAINT fk_spec_feat_id
+  ADD CONSTRAINT fk_spec_feat_id
 	FOREIGN KEY (special_feature_id) REFERENCES content_stream (content_id);
 
 
