@@ -1,27 +1,27 @@
 SET search_path TO sakila;
 
 
-Drop table if exists staff cascade;
+DROP TABLE IF EXISTS staff CASCADE;
 
-drop table if exists inventory cascade;
+DROP TABLE IF EXISTS  inventory CASCADE;
 
-drop table if exists store cascade;
+DROP TABLE IF EXISTS  store CASCADE;
 
-drop table if exists rental cascade;
+DROP TABLE IF EXISTS  rental CASCADE;
 
-drop table if exists film_actor;
+DROP TABLE IF EXISTS  film_actor;
 
-drop table if exists film_category;
+DROP TABLE IF EXISTS film_category;
 
-drop table if exists film_special_feature;
+DROP TABLE IF EXISTS  film_special_feature;
 
 
 
-alter table payment
-drop column rental_id,
-drop column staff_id,
-drop column customer_id,
-drop column amount;
+ALTER TABLE payment
+DROP COLUMN rental_id,
+DROP COLUMN staff_id,
+DROP COLUMN customer_id,
+DROP COLUMN amount;
 
-alter table customer
-DROP COLUMN if exists store_id cascade;
+ALTER TABLE customer
+DROP COLUMN IF EXISTS store_id CASCADE;
