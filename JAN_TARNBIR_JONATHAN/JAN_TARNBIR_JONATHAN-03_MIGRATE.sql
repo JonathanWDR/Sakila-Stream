@@ -86,13 +86,13 @@ INSERT INTO content_stream
    original_language_id,
    length)
 SELECT
-  f.film_id,
-  (SELECT content_type_id FROM content_type WHERE content_ty_name = 'Film') AS content_type_id,
-  f.title,
-  f.release_year,
-  f.original_language_id,
-  f.length
-FROM film AS f;
+   film_id,
+   (Select content_type_id from content_type where content_ty_name = 'Film'),
+   title,
+   release_year,
+   original_language_id,
+   length
+FROM film;
 
 
 --- film category -> content_category
